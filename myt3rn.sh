@@ -22,7 +22,8 @@ function main_menu() {
         echo "请选择要执行的操作:"
         echo "1) 执行脚本"
         echo "2) 查看日志"
-        echo "3) 退出"
+        echo "3) 清除21.0版本"
+        echo "4) 退出"
         
         read -p "请输入你的选择 [1-3]: " choice
         
@@ -34,6 +35,9 @@ function main_menu() {
                 view_logs
                 ;;
             3)
+                cleanup_old_files
+                ;;
+            4)
                 echo "退出脚本。"
                 exit 0
                 ;;
@@ -47,8 +51,8 @@ function main_menu() {
 # 执行脚本函数
 function execute_script() {
     # 下载文件
-    echo "正在下载 executor-linux-v0.21.0.tar.gz..."
-    wget https://github.com/t3rn/executor-release/releases/download/v0.21.0/executor-linux-v0.21.0.tar.gz
+    echo "正在下载 executor-linux-v0.21.1.tar.gz..."
+    wget https://github.com/t3rn/executor-release/releases/download/v0.21.1/executor-linux-v0.21.1.tar.gz
 
     # 检查下载是否成功
     if [ $? -eq 0 ]; then
@@ -60,7 +64,7 @@ function execute_script() {
 
     # 解压文件到当前目录
     echo "正在解压文件..."
-    tar -xvzf executor-linux-v0.21.0.tar.gz
+    tar -xvzf executor-linux-v0.21.1.tar.gz
 
     # 检查解压是否成功
     if [ $? -eq 0 ]; then
@@ -93,7 +97,7 @@ function execute_script() {
 
     # 删除压缩文件
     echo "删除压缩包..."
-    rm executor-linux-v0.21.0.tar.gz
+    rm executor-linux-v0.21.1.tar.gz
 
     # 切换目录并执行脚本
     echo "切换目录并执行 ./executor..."
@@ -116,7 +120,7 @@ function execute_script() {
 function view_logs() {
     if [ -f "$LOGFILE" ]; then
         echo "显示日志文件内容（最后 50 行）："
-        tail -n 50 "$LOGFILE"
+        tail -n 50 -f "$LOGFILE"
     else
         echo "日志文件不存在。"
     fi
@@ -125,6 +129,31 @@ function view_logs() {
     read -n 1 -s -r -p "按任意键返回主菜单..."
     main_menu
 }
+
+# 删除解压文件和压缩包的函数
+function cleanup_old_files() {
+    # 定义解压后的文件夹路径和压缩包路径
+    EXTRACTED_DIR="$HOME/executor"
+
+    # 检查并删除解压后的文件夹
+    if [ -d "$EXTRACTED_DIR" ]; then
+        echo "找到解压后的文件夹: $EXTRACTED_DIR"
+        echo "正在删除解压后的文件夹..."
+        rm -rf "$EXTRACTED_DIR"
+        if [ $? -eq 0 ]; then
+            echo "解压后的文件夹已成功删除。"
+        else
+            echo "删除文件夹失败，请检查权限或其他问题。"
+            return 1  # 如果删除失败，返回错误代码
+        fi
+    else
+        echo "未找到解压后的文件夹: $EXTRACTED_DIR"
+    fi
+
+    echo "清理完成。"
+    return 0  # 成功完成时返回0
+}
+
 
 # 启动主菜单
 main_menu
