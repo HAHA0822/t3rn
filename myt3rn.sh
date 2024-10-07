@@ -22,8 +22,9 @@ function main_menu() {
         echo "请选择要执行的操作:"
         echo "1) 执行脚本"
         echo "2) 查看日志"
-        echo "3) 清除旧版本"
-        echo "4) 退出"
+        echo "3) 重启节点"
+        echo "4) 清除旧版本"
+        echo "5) 退出"
         
         read -p "请输入你的选择 [1-3]: " choice
         
@@ -35,9 +36,12 @@ function main_menu() {
                 view_logs
                 ;;
             3)
-                cleanup_old_files
+                restart_node
                 ;;
             4)
+                cleanup_old_files
+                ;;
+            5)
                 echo "退出脚本。"
                 exit 0
                 ;;
@@ -165,6 +169,41 @@ function cleanup_old_files() {
     return 0  # 成功完成时返回0
 }
 
+function restart_node(){
+    # 设置环境变量
+    export NODE_ENV=testnet
+    export LOG_LEVEL=debug
+    export LOG_PRETTY=false
+    export ENABLED_NETWORKS='arbitrum-sepolia,base-sepolia,blast-sepolia,optimism-sepolia,l1rn'
+
+    # 提示用户输入私钥
+    read -p "请输入 PRIVATE_KEY_LOCAL 的值: " PRIVATE_KEY_LOCAL
+
+    # 设置私钥变量
+    export PRIVATE_KEY_LOCAL="$PRIVATE_KEY_LOCAL"
+
+    # 切换目录并执行脚本
+    echo "切换目录并执行 ./executor..."
+    cd ~/executor/executor/bin
+
+    # 重定向日志输出
+    # ./executor > "$LOGFILE" 2>&1 &
+
+    # 使用 pm2 启动 executor
+    pm2 start ./executor --name executor --log "$LOGFILE" --env NODE_ENV=$NODE_ENV --env LOG_LEVEL=$LOG_LEVEL --env LOG_PRETTY=$LOG_PRETTY --env ENABLED_NETWORKS=$ENABLED_NETWORKS --env PRIVATE_KEY_LOCAL="$PRIVATE_KEY_LOCAL"
+
+    # 显示 pm2 进程列表
+    pm2 list
+
+    # 显示后台进程 PID
+    echo "executor 进程已启动，PID: $!"
+
+    echo "操作完成。"
+
+    # 提示用户按任意键返回主菜单
+    read -n 1 -s -r -p "按任意键返回主菜单..."
+    main_menu
+}
 
 # 启动主菜单
 main_menu
