@@ -22,7 +22,7 @@ function main_menu() {
         echo "请选择要执行的操作:"
         echo "1) 执行脚本"
         echo "2) 查看日志"
-        echo "3) 清除21.0版本"
+        echo "3) 清除旧版本"
         echo "4) 退出"
         
         read -p "请输入你的选择 [1-3]: " choice
@@ -51,20 +51,24 @@ function main_menu() {
 # 执行脚本函数
 function execute_script() {
     # 下载文件
-    echo "正在下载 executor-linux-v0.21.6.tar.gz..."
-    wget https://github.com/t3rn/executor-release/releases/download/v0.21.6/executor-linux-v0.21.6.tar.gz
-
-    # 检查下载是否成功
-    if [ $? -eq 0 ]; then
-        echo "下载成功。"
+    if [ -f "executor-linux-v0.21.6.tar.gz" ]; then
+        echo "文件 executor-linux-v0.21.6.tar.gz 已存在，跳过下载。"
     else
-        echo "下载失败，请检查网络连接或下载地址。"
-        exit 1
-    fi
+        echo "正在下载 executor-linux-v0.21.6.tar.gz..."
+        wget https://github.com/t3rn/executor-release/releases/download/v0.21.6/executor-linux-v0.21.6.tar.gz
 
-    # 解压文件到当前目录
-    echo "正在解压文件..."
-    tar -xvzf executor-linux-v0.21.6.tar.gz
+        # 检查下载是否成功
+        if [ $? -eq 0 ]; then
+            echo "下载成功。"
+        else
+            echo "下载失败，请检查网络连接或下载地址。"
+            exit 1
+        fi
+
+        # 解压文件到当前目录
+        echo "正在解压文件..."
+        tar -xvzf executor-linux-v0.21.6.tar.gz
+    fi
 
     # 检查解压是否成功
     if [ $? -eq 0 ]; then
@@ -104,7 +108,13 @@ function execute_script() {
     cd ~/executor/executor/bin
 
     # 重定向日志输出
-    ./executor > "$LOGFILE" 2>&1 &
+    # ./executor > "$LOGFILE" 2>&1 &
+
+    # 使用 pm2 启动 executor
+    pm2 start ./executor --name executor --log "$LOGFILE" --env NODE_ENV=$NODE_ENV --env LOG_LEVEL=$LOG_LEVEL --env LOG_PRETTY=$LOG_PRETTY --env ENABLED_NETWORKS=$ENABLED_NETWORKS --env PRIVATE_KEY_LOCAL="$PRIVATE_KEY_LOCAL"
+
+    # 显示 pm2 进程列表
+    pm2 list
 
     # 显示后台进程 PID
     echo "executor 进程已启动，PID: $!"
@@ -118,12 +128,13 @@ function execute_script() {
 
 # 查看日志函数
 function view_logs() {
-    if [ -f "$LOGFILE" ]; then
-        echo "显示日志文件内容（最后 50 行）："
-        tail -n 50 -f "$LOGFILE"
-    else
-        echo "日志文件不存在。"
-    fi
+    # if [ -f "$LOGFILE" ]; then
+    #     echo "显示日志文件内容（最后 50 行）："
+    #     tail -n 50 -f "$LOGFILE"
+    # else
+    #     echo "日志文件不存在。"
+    # fi
+    pm2 logs executor
 
     # 提示用户按任意键返回主菜单
     read -n 1 -s -r -p "按任意键返回主菜单..."
