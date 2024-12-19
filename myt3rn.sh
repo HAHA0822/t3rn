@@ -55,11 +55,11 @@ function main_menu() {
 # 执行脚本函数
 function execute_script() {
     # 下载文件
-    if [ -f "executor-linux-v0.27.0.tar.gz" ]; then
-        echo "文件 executor-linux-v0.27.0.tar.gz 已存在，跳过下载。"
+    if [ -f "executor-linux-v0.28.0.tar.gz" ]; then
+        echo "文件 executor-linux-v0.28.0.tar.gz 已存在，跳过下载。"
     else
-        echo "正在下载 executor-linux-v0.27.0.tar.gz..."
-        wget https://github.com/t3rn/executor-release/releases/download/v0.27.0/executor-linux-v0.27.0.tar.gz
+        echo "正在下载 executor-linux-v0.28.0.tar.gz..."
+        wget https://github.com/t3rn/executor-release/releases/download/v0.28.0/executor-linux-v0.28.0.tar.gz
 
         # 检查下载是否成功
         if [ $? -eq 0 ]; then
@@ -71,7 +71,7 @@ function execute_script() {
 
         # 解压文件到当前目录
         echo "正在解压文件..."
-        tar -xvzf executor-linux-v0.27.0.tar.gz
+        tar -xvzf executor-linux-v0.28.0.tar.gz
     fi
 
     # 检查解压是否成功
@@ -105,7 +105,7 @@ function execute_script() {
 
     # 删除压缩文件
     echo "删除压缩包..."
-    rm executor-linux-v0.27.0.tar.gz
+    rm executor-linux-v0.28.0.tar.gz
 
     # 切换目录并执行脚本
     echo "切换目录并执行 ./executor..."
