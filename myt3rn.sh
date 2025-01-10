@@ -97,6 +97,8 @@ function execute_script() {
     export LOG_PRETTY=false
     export ENABLED_NETWORKS='arbitrum-sepolia,base-sepolia,blast-sepolia,optimism-sepolia,l1rn'
     export EXECUTOR_MAX_L3_GAS_PRICE=800
+    export EXECUTOR_PROCESS_ORDERS=true
+    export EXECUTOR_PROCESS_CLAIMS=true
 
     # 提示用户输入私钥
     read -p "请输入 PRIVATE_KEY_LOCAL 的值: " PRIVATE_KEY_LOCAL
