@@ -96,7 +96,7 @@ function execute_script() {
     export LOG_LEVEL=debug
     export LOG_PRETTY=false
     export ENABLED_NETWORKS='arbitrum-sepolia,base-sepolia,blast-sepolia,optimism-sepolia,l1rn'
-    export EXECUTOR_MAX_L3_GAS_PRICE=800
+    export EXECUTOR_MAX_L3_GAS_PRICE=3800
     export EXECUTOR_PROCESS_ORDERS=true
     export EXECUTOR_PROCESS_CLAIMS=true
 
